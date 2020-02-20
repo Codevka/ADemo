@@ -1,0 +1,12 @@
+<!--index.wxml-->
+
+<button class="button-display" bindtap="myimg">选择图片</button>
+
+<view class="display">
+  <image src="{{ result }}" mode="widthFix" />
+</view>
+  
+  
+<view class="display">{{ poem }}</view>
+<view>{{ info }}</view>
+
