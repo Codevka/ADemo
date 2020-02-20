@@ -25,14 +25,14 @@ Page({
           poem: '上网不涉密，涉密不上网。',
         });
 
+        // TODO: 上传图片
         wx.uploadFile({
           url: 'localhost:8888/user/uploadimg', // 接口地址
           filePath: tempFilePaths[0],
           name: 'imgfile',
           // header: {}, // 设置请求的 header
           success: res => { // 传输到服务器 
-
-          // TODO: 实现从服务器返回诗句
+            // TODO: 实现从服务器返回诗句
             console.log(res.data);
 
             that.setData({
