@@ -3,10 +3,10 @@
 <button class="button-display" bindtap="myimg">选择图片</button>
 
 <view class="display">
-  <image src="{{ result }}" mode="widthFix" />
+  <image src="{{ result }}" mode="widthFix" /> <!-- 展示上传的图片 -->
 </view>
   
-  
-<view class="display">{{ poem }}</view>
-<view>{{ info }}</view>
+<view class="display">{{ info }}</view> <!-- 是否上传成功 -->
+<view class="display">{{ debug }}</view>
+<view class="display">{{ poem }}</view> 
 

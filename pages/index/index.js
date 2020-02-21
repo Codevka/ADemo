@@ -2,9 +2,10 @@
 Page({
   // 页面的初始数据
   data: {
-    result: '',
-    info: '',
-    poem: '',
+    result: '', // 上传图片的本地地址
+    info: '', // 上传成功信息
+    debug: '', // 上传图片的服务器地址
+    poem: '' // 返回的诗句
   },
 
   myimg: function() {
@@ -15,47 +16,57 @@ Page({
       sizeType: ['original', 'compressed'], // original 原图，compressed 压缩图，默认二者都有
       sourceType: ['album', 'camera'], // album 从相册选图，camera 使用相机，默认二者都有
 
-      success: res => {
+      success: function(res) {
         // 返回选定照片的本地文件路径列表
         var tempFilePaths = res.tempFilePaths; // tempFilePath 可以作为 img 标签的 src 属性显示图片
         that.setData({
           result: tempFilePaths,
-          // info: '上传成功',
-          // poem: tempFilePaths[0]
-          poem: '上网不涉密，涉密不上网。',
+          info: '正在上传...',
+          poem: '上网不涉密，涉密不上网。'
         });
 
         // TODO: 上传图片
         wx.uploadFile({
-          url: 'localhost:8888/user/uploadimg', // 接口地址
+          url: 'http://123.57.41.160:8080/upload', // 接口地址（这是测试地址）
+          // TODO: 实现阿里云服务器的外网访问入口
           filePath: tempFilePaths[0],
-          name: 'imgfile',
-          // header: {}, // 设置请求的 header
-          success: res => { // 传输到服务器 
-            // TODO: 实现从服务器返回诗句
-            console.log(res.data);
+          name: 'file',
+          header: {
+            'Content-Type': 'multipart/form-data'
+          }, // 设置请求的 header
+
+          success: function(res) {
+            var imgPath = res.data;
+            console.log(imgPath);
 
             that.setData({
-              result: tempFilePaths,
-              info: '上传成功',
-              poem: tempFilePaths[0]
+              info: '上传成功！', // 上传成功后的提示
+              debug: imgPath // 上传图片的服务器地址
             });
-            // getApp().request({
-            //   url: '/index',
-            //   method: 'patch',
-            //   data: {
-            //     result: res.data
-            //   },
-            //   success: function() {
-            //     wx.hideLoading();
-            //     that.setData({
-            //       result: res.data
-            //     });
-            //   }
-            // });
+
+            // TODO: 实现从服务器返回诗句
+            wx.request({
+              url: 'http://123.57.41.160:8080/generate_poem?url=' + imgPath,
+              method: 'GET',
+              header: {
+                'Content-type': 'application/json'
+              },
+
+              success: function() {
+                var returnJSON = res.data;
+                var returnPoem = returnJSON[0];
+
+                that.setData({
+                  poem: returnPoem
+                });
+              }
+            });
           },
           fail: function() {
             console.log(res);
+            that.setData({
+              info: '上传失败'
+            });
           },
           complete: function() {}
         });
