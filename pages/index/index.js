@@ -24,17 +24,17 @@ Page({
         that.setData({
           result: tempFilePaths[0],
           info: '正在上传...',
-          poem: ''
+          sentence1: '',
+          sentence2: ''
         });
 
         wx.uploadFile({
           url: 'http://101.132.75.111:8080/upload', // 接口地址（这是测试地址）
-          // TODO: 实现阿里云服务器的外网访问入口
           filePath: tempFilePaths[0],
           name: 'file',
           header: {
             'Content-Type': 'multipart/form-data'
-          }, // 设置请求的 header
+          },
 
           success: function(res) {
             var imgPath = res.data;
@@ -53,22 +53,34 @@ Page({
               success: function(res) {
                 var returnJSON = res.data;
                 console.log(returnJSON);
-                returnJSON = returnJSON.split('。');
 
-                var poem1 = returnJSON[0].concat('。\n');
-                var poem2 = returnJSON[1].concat('。\n');
-                console.log(poem1 + poem2);
+                var errSign = returnJSON.indexOf("字典");
+                var errSign2 = returnJSON.indexOf('*');
+                var errSign3 = returnJSON[returnJSON.length - 1] == '。' ? -1 : 1;
 
-                that.setData({
-                  info: '生成成功！',
-                  sentence1: poem1,
-                  sentence2: poem2
-                });
+                if (errSign <= -1 && errSign2 <= -1 && errSign3 <= -1) {
+                  returnJSON = returnJSON.split('。');
+                  var poem1 = returnJSON[0].concat('。\n');
+                  var poem2 = returnJSON[1].concat('。\n');
+                  console.log(poem1 + poem2);
+
+                  that.setData({
+                    info: '生成成功！',
+                    sentence1: poem1,
+                    sentence2: poem2
+                  });
+                } else {
+                  that.setData({
+                    info: '生成失败 QAQ',
+                    sentence1: "我们的 AI 太笨了",
+                    sentence2: "请尽量上传较为纯粹的风景图"
+                  });
+                }
+
               }
             });
           },
           fail: function() {
-            // console.log(res);
             that.setData({
               info: '上传失败'
             });
