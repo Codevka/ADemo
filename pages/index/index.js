@@ -5,7 +5,9 @@ Page({
     result: '', // 上传图片的本地地址
     info: '', // 上传成功信息
     debug: '', // 上传图片的服务器地址
-    poem: '' // 返回的诗句
+    // poem: '', 
+    sentence1: '',
+    sentence2: '' // 分成两句
   },
 
   myimg: function() {
@@ -22,12 +24,11 @@ Page({
         that.setData({
           result: tempFilePaths[0],
           info: '正在上传...',
-          // poem: '上网不涉密，涉密不上网。'
+          poem: ''
         });
 
-        // TODO: 上传图片
         wx.uploadFile({
-          url: 'http://123.57.41.160:8080/upload', // 接口地址（这是测试地址）
+          url: 'http://101.132.75.111:8080/upload', // 接口地址（这是测试地址）
           // TODO: 实现阿里云服务器的外网访问入口
           filePath: tempFilePaths[0],
           name: 'file',
@@ -37,16 +38,13 @@ Page({
 
           success: function(res) {
             var imgPath = res.data;
-            // console.log(imgPath);
 
             that.setData({
-              info: '上传成功！', // 上传成功后的提示
-              debug: imgPath     // 上传图片的服务器地址
+              info: 'AI 正在为您生成诗句...', // 上传成功后的提示
             });
 
-            // TODO: 实现从服务器返回诗句
             wx.request({
-              url: 'http://123.57.41.160:8080/generate?url=' + imgPath,
+              url: 'http://101.132.75.111:8080/generate?url=' + imgPath,
               method: 'GET',
               header: {
                 'Content-type': 'application/json'
@@ -54,11 +52,17 @@ Page({
 
               success: function(res) {
                 var returnJSON = res.data;
-                // var returnPoem = returnJSON[0];
-                var returnPoem = returnJSON;
+                console.log(returnJSON);
+                returnJSON = returnJSON.split('。');
+
+                var poem1 = returnJSON[0].concat('。\n');
+                var poem2 = returnJSON[1].concat('。\n');
+                console.log(poem1 + poem2);
 
                 that.setData({
-                  poem: returnPoem
+                  info: '生成成功！',
+                  sentence1: poem1,
+                  sentence2: poem2
                 });
               }
             });

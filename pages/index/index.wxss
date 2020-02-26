@@ -11,3 +11,11 @@
   background-color: #04BE02;
   color: #FFF;
 }
+
+.loading-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 40rpx;
+  color: grey;
+}
