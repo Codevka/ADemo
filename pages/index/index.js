@@ -54,9 +54,15 @@ Page({
                 var returnJSON = res.data;
                 console.log(returnJSON);
 
-                var errSign = returnJSON.indexOf("字典");
-                var errSign2 = returnJSON.indexOf('*');
-                var errSign3 = returnJSON[returnJSON.length - 1] == '。' ? -1 : 1;
+                var errSign = returnJSON.indexOf("字典");  // 字典中不存在
+                var errSign2 = returnJSON.indexOf('*');    // 未知字符
+
+                var count = 0;
+                for (var index = 0; index <= returnJSON.length; index++) {
+                  if (returnJSON[index] == '。')
+                    count++;
+                }
+                var errSign3 = count == 2 ? -1 : 1;        // 句号不足
 
                 if (errSign <= -1 && errSign2 <= -1 && errSign3 <= -1) {
                   returnJSON = returnJSON.split('。');
