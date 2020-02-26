@@ -20,9 +20,9 @@ Page({
         // 返回选定照片的本地文件路径列表
         var tempFilePaths = res.tempFilePaths; // tempFilePath 可以作为 img 标签的 src 属性显示图片
         that.setData({
-          result: tempFilePaths,
+          result: tempFilePaths[0],
           info: '正在上传...',
-          poem: '上网不涉密，涉密不上网。'
+          // poem: '上网不涉密，涉密不上网。'
         });
 
         // TODO: 上传图片
@@ -37,24 +37,25 @@ Page({
 
           success: function(res) {
             var imgPath = res.data;
-            console.log(imgPath);
+            // console.log(imgPath);
 
             that.setData({
               info: '上传成功！', // 上传成功后的提示
-              debug: imgPath // 上传图片的服务器地址
+              debug: imgPath     // 上传图片的服务器地址
             });
 
             // TODO: 实现从服务器返回诗句
             wx.request({
-              url: 'http://123.57.41.160:8080/generate_poem?url=' + imgPath,
+              url: 'http://123.57.41.160:8080/generate?url=' + imgPath,
               method: 'GET',
               header: {
                 'Content-type': 'application/json'
               },
 
-              success: function() {
+              success: function(res) {
                 var returnJSON = res.data;
-                var returnPoem = returnJSON[0];
+                // var returnPoem = returnJSON[0];
+                var returnPoem = returnJSON;
 
                 that.setData({
                   poem: returnPoem
@@ -63,7 +64,7 @@ Page({
             });
           },
           fail: function() {
-            console.log(res);
+            // console.log(res);
             that.setData({
               info: '上传失败'
             });
