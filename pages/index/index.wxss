@@ -12,6 +12,8 @@
   color: #FFF;
 }
 
+
+
 .loading-display {
   display: flex;
   align-items: center;

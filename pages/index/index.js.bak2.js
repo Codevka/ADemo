@@ -7,11 +7,7 @@ Page({
     debug: '', // 上传图片的服务器地址
     // poem: '', 
     sentence1: '',
-    sentence2: '', // 分成两句
-    items: [
-      { name: 'AI', value: 'AI作诗', checked: 'true'},
-      { name: 'Search', value: '诗歌匹配'},
-    ]
+    sentence2: '' // 分成两句
   },
 
   myimg: function() {
@@ -33,7 +29,7 @@ Page({
         });
 
         wx.uploadFile({
-          url: 'http://101.132.117.135:8080/upload', // 接口地址（这是测试地址）
+          url: 'http://101.132.75.111:8080/upload', // 接口地址（这是测试地址）
           filePath: tempFilePaths[0],
           name: 'file',
           header: {
@@ -48,7 +44,7 @@ Page({
             });
 
             wx.request({
-              url: 'http://101.132.117.135:8080/generate?url=' + imgPath,
+              url: 'http://101.132.75.111:8080/generate?url=' + imgPath,
               method: 'GET',
               header: {
                 'Content-type': 'application/json'
@@ -59,29 +55,19 @@ Page({
                 console.log(returnJSON);
 
                 var errSign = returnJSON.indexOf("字典");
-                var errSign2 = -1; //returnJSON.indexOf('*');
+                var errSign2 = returnJSON.indexOf('*');
+                var errSign3 = returnJSON[returnJSON.length - 1] == '。' ? -1 : 1;
 
-                var count = 0;
-                for (var index = 0; index <= returnJSON.length; index++) {
-                  if (returnJSON[index] == '。')
-                    count++;
-                    /*
-                  if (returnJSON[index] == '*')
-                    returnJSON[index] = "之"
-                    returnJSON = returnJSON.slice(0, index) + "之" + returnJSON.slice(index);*/
-                }
-                var errSign3 = count;
-                console.log(errSign3);
-                if (errSign <= -1 && errSign2 <= -1 && count > 0) {
+                if (errSign <= -1 && errSign2 <= -1 && errSign3 <= -1) {
                   returnJSON = returnJSON.split('。');
-                  var poem = "";
-                  for (var index = 0; index <count; index++) {
-                    poem += returnJSON[index] + "。\n"
-                  }
-                  console.log(poem);
+                  var poem1 = returnJSON[0].concat('。\n');
+                  var poem2 = returnJSON[1].concat('。\n');
+                  console.log(poem1 + poem2);
+
                   that.setData({
                     info: '生成成功！',
-                    sentence1: poem
+                    sentence1: poem1,
+                    sentence2: poem2
                   });
                 } else {
                   that.setData({

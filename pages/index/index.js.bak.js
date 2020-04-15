@@ -7,11 +7,7 @@ Page({
     debug: '', // 上传图片的服务器地址
     // poem: '', 
     sentence1: '',
-    sentence2: '', // 分成两句
-    items: [
-      { name: 'AI', value: 'AI作诗', checked: 'true'},
-      { name: 'Search', value: '诗歌匹配'},
-    ]
+    sentence2: '' // 分成两句
   },
 
   myimg: function() {
@@ -33,12 +29,13 @@ Page({
         });
 
         wx.uploadFile({
-          url: 'http://101.132.117.135:8080/upload', // 接口地址（这是测试地址）
+          url: 'http://101.132.75.111:8080/upload', // 接口地址（这是测试地址）
+          // TODO: 实现阿里云服务器的外网访问入口
           filePath: tempFilePaths[0],
           name: 'file',
           header: {
             'Content-Type': 'multipart/form-data'
-          },
+          }, // 设置请求的 header
 
           success: function(res) {
             var imgPath = res.data;
@@ -48,7 +45,7 @@ Page({
             });
 
             wx.request({
-              url: 'http://101.132.117.135:8080/generate?url=' + imgPath,
+              url: 'http://101.132.75.111:8080/generate?url=' + imgPath,
               method: 'GET',
               header: {
                 'Content-type': 'application/json'
@@ -57,44 +54,22 @@ Page({
               success: function(res) {
                 var returnJSON = res.data;
                 console.log(returnJSON);
+                returnJSON = returnJSON.split('。');
 
-                var errSign = returnJSON.indexOf("字典");
-                var errSign2 = -1; //returnJSON.indexOf('*');
+                var poem1 = returnJSON[0].concat('。\n');
+                var poem2 = returnJSON[1].concat('。\n');
+                console.log(poem1 + poem2);
 
-                var count = 0;
-                for (var index = 0; index <= returnJSON.length; index++) {
-                  if (returnJSON[index] == '。')
-                    count++;
-                    /*
-                  if (returnJSON[index] == '*')
-                    returnJSON[index] = "之"
-                    returnJSON = returnJSON.slice(0, index) + "之" + returnJSON.slice(index);*/
-                }
-                var errSign3 = count;
-                console.log(errSign3);
-                if (errSign <= -1 && errSign2 <= -1 && count > 0) {
-                  returnJSON = returnJSON.split('。');
-                  var poem = "";
-                  for (var index = 0; index <count; index++) {
-                    poem += returnJSON[index] + "。\n"
-                  }
-                  console.log(poem);
-                  that.setData({
-                    info: '生成成功！',
-                    sentence1: poem
-                  });
-                } else {
-                  that.setData({
-                    info: '生成失败 QAQ',
-                    sentence1: "我们的 AI 太笨了",
-                    sentence2: "请尽量上传较为纯粹的风景图"
-                  });
-                }
-
+                that.setData({
+                  info: '生成成功！',
+                  sentence1: poem1,
+                  sentence2: poem2
+                });
               }
             });
           },
           fail: function() {
+            // console.log(res);
             that.setData({
               info: '上传失败'
             });
